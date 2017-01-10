@@ -1,0 +1,68 @@
+2016 10 20
+链表有头节点pHead， pHead->pNext 为第一个有效节点
+	在结构体中添加 后缀名  char Extension[MAX_PATH / 10] ; 成员
+  	FilePathFindExten函数添加  后缀名 过长警告：----出错警告  文件名长度 可能过长
+	更新链表库函数和头文件 
+		更新冒泡排序函数名 为Bublle_sort_list
+		增加销毁链表的函数 void ListDestroy(struct NODE*head)
+		添加链表快排算法
+		添加链表拷贝函数  int CopyListNode(struct NODE * Copy_pHead, struct  NODE * qHead )
+	结构体增加 成员       int FileSizeHigh;   int FileSizeLow;
+	结构体增加函数 显示单个节点数据
+尝试写 查重函数  
+
+
+int   *int   =   4611686018427387904
+long   long int= 9223372036854775807 
+
+bug 销毁快排链表时 第一个节点销毁失败
+
+
+2016 10 21
+	添加函数 int calculateFilePiontMD5 (struct NODE *p ) 计算节点文件的md5 过小的不计算
+
+	traverse_file_list_check_repeat 函数增加md5比对 
+	traverse_file_list_check_repeat函数 struct NODE *pList =NULL  ; 改成 struct NODE *pList =(  struct NODE *)malloc(sizeof(  struct NODE));
+
+修改检查大小阈值 为1024KB
+	删除 FileListWrite 的md5计算部分
+增加一个链表pFile保存重复文件信息，增加traverse_file_list_check_repeat形参char filepath[MAX_PATH]
+FileListWrite增加统计文件节点数量 大小
+
+
+移到新项目 文件查重
+
+删除部分注释代码
+
+
+2016 10 27
+
+修改函数
+int  FileListWrite(  char filepath[MAX_PATH],  struct NODE *pHead )
+    strcat(fileName, "list.txt");改成  strcat(fileName, "\\list.txt");
+为解决根目录无法正常写入 重复文件列表txt   例子 （即修改成 F:\list.txt）
+
+
+问题  未避开回收站 F:\$RECYCLE.BIN
+	尝试 //跳过回收站
+
+
+2016 11 8
+	增加 函数 int SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
+	  //排序遍历链表  写入文件
+
+	修改FileListWrite 函数， 当list.txt已存在时 修改文件名为 list%d.txt
+修改bug   printf(fp, "   %lf GB  ", p->FileSizeGB);改为 fprintf(fp, "   %lf GB  ", p->FileSizeGB);
+
+
+
+2016 11 11
+	目标   增加 menu菜单函数
+		修改FileListWrite 函数 增加 文件名参数  不同选择产生不同名称的txt文件
+
+
+
+
+
+
+

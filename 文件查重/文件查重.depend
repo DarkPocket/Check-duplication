@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1477053776 source:f:\c代码\c源程序\blocks代码库\文件查重\linkedlistc.c
+	"LinkedList.h"
+	<string.h>
+	<stdio.h>
+	<malloc.h>
+
+1476979714 f:\c代码\c源程序\blocks代码库\文件查重\linkedlist.h
+	<windows.h>
+
+1475415559 source:f:\c代码\c源程序\blocks代码库\文件查重\md5c.c
+	"md5c.h"
+	<string.h>
+	<stdio.h>
+
+1475481550 f:\c代码\c源程序\blocks代码库\文件查重\md5c.h
+
+1483188607 source:f:\c代码\c源程序\blocks代码库\文件查重\main.c
+	"md5c.h"
+	"LinkedList.h"
+	<string.h>
+	<stdio.h>
+	<malloc.h>
+	<windows.h>
+
