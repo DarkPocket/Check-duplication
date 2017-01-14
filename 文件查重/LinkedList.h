@@ -12,13 +12,13 @@ cpp还是c 影响快排代码
         c        return tmpHead.pNext;
 */
 
-
+#define INT_Max  2147483647
 struct NODE
 {
         //by black
 
         int NumID;
-        long int FileSizeB;
+     long   long int FileSizeB;
 
         double FileSizeGB;  //   = FileSizeB /(1024*1024*1024)= FileSizeB / 1073741824
         //  一 FileSizeB保存完整大小 超过后转成以GB为单位的FileSizeGB，

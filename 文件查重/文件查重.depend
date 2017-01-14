@@ -23,3 +23,19 @@
 	<malloc.h>
 	<windows.h>
 
+1477053776 source:f:\codesave\c\check-duplication\文件查重\linkedlistc.c
+	"LinkedList.h"
+	<string.h>
+	<stdio.h>
+	<malloc.h>
+
+1484398815 f:\codesave\c\check-duplication\文件查重\linkedlist.h
+	<windows.h>
+
+1475415559 source:f:\codesave\c\check-duplication\文件查重\md5c.c
+	"md5c.h"
+	<string.h>
+	<stdio.h>
+
+1475481550 f:\codesave\c\check-duplication\文件查重\md5c.h
+

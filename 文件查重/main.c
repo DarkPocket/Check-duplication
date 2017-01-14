@@ -14,7 +14,7 @@ double AllFileSizes = 0;
 
 #define CHECK_MIN_SIZE 1024000  // CheckMinSize 512000
 
-#define INT_Max  2147483647
+
 
 
 
@@ -94,7 +94,7 @@ void find(char * lpPath , struct NODE *pHead)
                 printf("\t\t  %ld \n", FileCount);
                 return;
         }
-        //StackCount++;
+
 
 
         while (TRUE)
@@ -115,15 +115,13 @@ void find(char * lpPath , struct NODE *pHead)
 
                                 strcat(szFile, FindFileData.cFileName);
 
-                                //    printf("\n\t szFile  %s  lpPath=%s   cFileName= %s  \n", szFile, lpPath , FindFileData.cFileName);
-                                //   getchar();
+
 
                                 if (  strcmp( FindFileData.cFileName, "$RECYCLE.BIN") == 0) // $RECYCLE.BIN
                                 {
                                         //跳过回收站
                                         printf("回收站\n" );
-                                        //   continue;
-                                        //    return ;
+
                                 }
                                 else
                                 {
@@ -132,15 +130,6 @@ void find(char * lpPath , struct NODE *pHead)
 
 
                                 }
-
-                                /*   if (FileCount % 1000 == 0)
-                                   {
-                                           //      printf("\n\t 目录%s  len=  %d \n", szFile, strlen( szFile));
-                                           //     printf("\t\t  %ld \n", FileCount);
-                                   }
-                                */
-                                //    printf("\t%s\n", szFile);
-
 
 
                         }
@@ -155,8 +144,10 @@ void find(char * lpPath , struct NODE *pHead)
                         //文件后缀名
                         FilePathFindExten(FindFileData.cFileName, Extension);
 
-                        long int FileSize = 0;
+                        long  long int FileSize = 0;
                         FileSize =  (FindFileData.nFileSizeHigh * (MAXDWORD + 1)) + FindFileData.nFileSizeLow;
+
+
                         AllFileSizes += (double)FileSize / 1024 ;
                         char FilePosit[MAX_PATH] = {0};
                         strcpy(FilePosit, lpPath);
@@ -183,6 +174,9 @@ void find(char * lpPath , struct NODE *pHead)
                         strcpy(pNew->FileName, FindFileData.cFileName );   //  pNew->FileName = qList->FileName;
                         pNew->FileSizeB =  FileSize;
                         pNew->FileSizeGB = (double)FileSize / 1073741824;
+
+                        pNew->FileSizeHigh = FileSize / (INT_Max) ;
+                        pNew->FileSizeLow = FileSize % (INT_Max) ;
 
                         strcpy(  pNew->FileMD5, ""  ); //  pNew->FileMD5 = 0;
 
@@ -265,7 +259,7 @@ int  FileListWrite(  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NOD
 
         wsprintf(PathTemp, "%s\\%s.txt", filepath , TxtName  )  ;
 
-        //      strcat(PathTemp, "\\list.txt");
+
 
         printf("打开 %s  \n  ", PathTemp);
 
@@ -277,9 +271,7 @@ int  FileListWrite(  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NOD
                         printf(" %s 已存在\n  ", PathTemp);
                         fclose(fpTemp);
                         j++;
-
                         wsprintf(PathTemp, "%s\\%s%d.txt", filepath , TxtName, j   )  ;
-
                         //    wsprintf( PathTemp , "%s\\list%d.txt" , filepath  , j );
                 }
 
@@ -291,7 +283,7 @@ int  FileListWrite(  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NOD
 
 
 
-        //  wsprintf(  fileName ,"\\list%d.txt",i );
+        //   sprintf(  fileName ,"\\list%d.txt",i );
 
 
 
@@ -392,11 +384,10 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 {
         //排序遍历链表查找重复文件
 
-        //   struct NODE *p = pHead->pNext;
 
         struct NODE *pList = (  struct NODE *)malloc(sizeof(  struct NODE));  // NULL  ;
 
-        //  struct NODE*q = (  struct NODE *)malloc(sizeof(  struct NODE));
+
         pList  =  quickSortList(pHead->pNext);
         struct NODE *p =  pList ;
 
@@ -405,16 +396,12 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
         pFile = Create_plist();
 
 
-        //    struct NODE  *pNew = (struct NODE *)malloc(sizeof(struct NODE));
-
-
-        long int FileSizeCache = 0 ;
+        long  long int FileSizeCache = 0 ;
 
         struct NODE *qTemp = NULL  ;
         long int counts = 0;
         long  long int allSize = 0;
-        //       FileSizeCache = p->FileSizeB ;
-        //     p = p->pNext;
+
         qTemp = p;
         while ( NULL != p)
         {
@@ -446,12 +433,7 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
                                 }
                                 *pNew2 = *p;
                                 add_list(pFile, pNew2);
-
-
-                                //   showPiont (qTemp);
-                                //   showPiont (p);
-
-                                counts++;
+        counts++;
                                 allSize = p->FileSizeB + allSize;
                         }
 
@@ -477,39 +459,27 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
         printf(" %ld 个重复文件  \n" ,    counts);
         printf("共  %lld  MB  \n" ,    allSize / 1048576);
 
-        /*
-                fprintf("    \n" );
-                fprintf(" %ld 个重复文件  \n" ,    counts);
-                fprintf("共  %lld  MB  \n" ,    allSize / 1048576);
-        */
-
-
-
 
         ListDestroy(pList);
 
         ListDestroy(pFile);
 
-        //     traverse_list(pList);
-
-
-
-        return 0;
+      return 0;
 }
 
-int SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
+struct NODE * SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
 {
         //排序遍历链表  写入文件
 
 
         struct NODE *pList = (  struct NODE *)malloc(sizeof(  struct NODE));  // NULL  ;
 
-        //  struct NODE*q = (  struct NODE *)malloc(sizeof(  struct NODE));
+
         pList  =  quickSortList(pHead->pNext);
 
         FileListWrite (   filepath, "SortList" , pList);
 
-        return 0;
+        return  pList ;
 
 }
 
@@ -528,7 +498,7 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
         scanf("%d", &select);
 
 
-
+        struct NODE * q = pHead;
 
 
 
@@ -544,7 +514,9 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
                 break  ;
         case 2 :
                 // 遍历文件夹 按大小排序输入到txt中
-                SortListWriteFile( filepath, pHead);
+                q = SortListWriteFile( filepath, pHead);
+                ListDestroy(q);
+                q = NULL;
                 break  ;
 
         case 3 :
@@ -556,6 +528,16 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
                 break ;
         }
 
+        if (q)
+        {
+                ListDestroy(pHead);
+                printf(" ListDestroy  traver  (pHead)   \n" );
+
+        }
+        else
+        {
+
+        }
 
 
 
@@ -565,7 +547,7 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
 
 void fun ( )
 {
-        //long long int 9223372036854775807
+
         struct NODE *pHead = NULL;
         pHead = Create_plist();
 
@@ -579,7 +561,7 @@ void fun ( )
         }
 
 
-        char filepath[MAX_PATH] = "F:\\系统资源\\字典文件合集\\txt1" ;
+        char filepath[MAX_PATH] = "g:\\迅雷\\Profiles\\Torrents\\" ;
 
         printf("输入目标地址 （例如 F:\\\\qq  ）\n");
         // scanf("%s",filepath);
@@ -601,25 +583,15 @@ void fun ( )
         }
 
 
-        //    traverse_list (pHead->pNext);
 
         length_list (pHead);
 
-        /*
-                struct NODE *pList = NULL  ;
-                pList  =  quickSortList(pHead->pNext);
-                traverse_list(pList);
-        */
+
 
 
         menu(filepath, pHead);
 
 
-        //         traverse_file_list_check_repeat (filepath, pHead);
-
-        //   SortListWriteFile( filepath, pHead);
-
-        //    FileListWrite( filepath, pHead);
 
         printf("扫描文件总大小为 " );
         if ( AllFileSizes > 0 && AllFileSizes < 1024 * 1024)
@@ -633,8 +605,7 @@ void fun ( )
 
         printf("FileCount %ld \n", FileCount);
 
-        //    printf(" ListDestroy  traver  (pHead)   \n" );
-        ListDestroy(pHead);
+
 
 
 }
@@ -685,13 +656,15 @@ int main (void)
         long j=0;
         j=i*2;
         printf("%d  ",i);
-
+        long long int l=9223372036854775807;
         printf("%ld  ",j);
         */
+
+
+
         fun ( );
 
-        //  fun2();
-        //   long long int i = 4611686018427387904;
+
         //long long int 9223372036854775807
 
         printf("over \n");
