@@ -18,7 +18,8 @@ double AllFileSizes = 0;
 
 
 
-// bug  单个文件超过2GB  文件大小出错
+// 新bug  单个文件超过2GB  文件大小出错
+//25.3 GB   显示 1.398491 GB
 
 void FilePathFindExten( TCHAR cFileName[ MAX_PATH ] , TCHAR Exten[MAX_PATH / 10 ])
 {
@@ -148,6 +149,10 @@ void find(char * lpPath , struct NODE *pHead)
                         FileSize =  (FindFileData.nFileSizeHigh * (MAXDWORD + 1)) + FindFileData.nFileSizeLow;
 
 
+                        ULONGLONG FileSizeLong = FindFileData.nFileSizeHigh;
+                        FileSizeLong <<= sizeof( FindFileData.nFileSizeHigh ) * 8;
+                        FileSizeLong |= FindFileData.nFileSizeLow;
+
                         AllFileSizes += (double)FileSize / 1024 ;
                         char FilePosit[MAX_PATH] = {0};
                         strcpy(FilePosit, lpPath);
@@ -172,11 +177,17 @@ void find(char * lpPath , struct NODE *pHead)
                         pNew->NumID = FileCount;
                         strcpy(  pNew->FilePath, FilePosit );
                         strcpy(pNew->FileName, FindFileData.cFileName );   //  pNew->FileName = qList->FileName;
-                        pNew->FileSizeB =  FileSize;
-                        pNew->FileSizeGB = (double)FileSize / 1073741824;
 
-                        pNew->FileSizeHigh = FileSize / (INT_Max) ;
-                        pNew->FileSizeLow = FileSize % (INT_Max) ;
+                        /*  pNew->FileSizeB =  FileSize;
+                           pNew->FileSizeGB = (double)FileSize / 1073741824;
+                           pNew->FileSizeHigh = FileSize / (INT_Max) ;
+                           pNew->FileSizeLow = FileSize % (INT_Max) ;
+                        */
+
+                        pNew->FileSizeB =   FileSizeLong;
+                        pNew->FileSizeGB = (double) FileSizeLong / 1073741824;
+                        pNew->FileSizeHigh =  FileSizeLong / (INT_Max) ;
+                        pNew->FileSizeLow =  FileSizeLong % (INT_Max) ;
 
                         strcpy(  pNew->FileMD5, ""  ); //  pNew->FileMD5 = 0;
 
@@ -331,6 +342,15 @@ int  FileListWrite(  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NOD
                         else
                         {
                                 fprintf(fp, "   %lf GB  ", p->FileSizeGB);
+
+                                double temp = 0;
+                                temp =  p-> FileSizeHigh * INT_Max + p->FileSizeLow ;
+                                fprintf(fp, "debug   %lf 字节  ", temp );
+                                temp = temp / 1073741824 ;
+
+                                fprintf(fp, "   %lf GB  ", temp );
+
+
                         }
 
                 }
@@ -433,7 +453,7 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
                                 }
                                 *pNew2 = *p;
                                 add_list(pFile, pNew2);
-        counts++;
+                                counts++;
                                 allSize = p->FileSizeB + allSize;
                         }
 
@@ -464,7 +484,7 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 
         ListDestroy(pFile);
 
-      return 0;
+        return 0;
 }
 
 struct NODE * SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
