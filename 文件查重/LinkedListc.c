@@ -385,7 +385,7 @@ void ListDestroy(struct NODE*head)
 struct NODE* partitionList( struct NODE* lowPre,  struct NODE* low,  struct NODE* high)
 {
         //链表范围是[low, high)
-        int key = low->FileSizeB; //排序标准
+            long   long int  key = low->FileSizeB; //排序标准
         struct NODE node1, node2;//比key小的链的头结点，比key大的链的头结点
         struct NODE* little = &node1, *big = &node2;
         struct NODE*i;
