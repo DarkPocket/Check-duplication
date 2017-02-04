@@ -56,7 +56,7 @@ int delete_list ( struct NODE *pHead, int j, int *x ); //删除j节点后面的�
 void Bublle_sort_list ( struct NODE *  );
 
 int CopyListNode ( struct  NODE * Copy_pHead, struct  NODE * qHead );
-
+struct NODE * CopyListNodes (  struct  NODE * qSource, struct  NODE * pCopy ) ;
 void ListDestroy ( struct NODE*head );
 
 
@@ -65,6 +65,8 @@ struct NODE* partitionList ( struct NODE* lowPre,  struct NODE* low,  struct NOD
 void qsortList ( struct NODE *headPre,  struct NODE*head,  struct NODE*tail );
 struct NODE *quickSortList ( struct NODE *head );
 
+
+struct NODE * SortList (   struct NODE *pHead );
 void showPiont ( struct NODE *p );
 
 #endif // LINKEDLIST_H_INCLUDED

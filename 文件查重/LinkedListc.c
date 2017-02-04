@@ -23,7 +23,8 @@ struct NODE *Create_plist()
         }
         // 尾节点
         pHead->pNext=NULL;
-
+pHead->FileSizeB=-1;
+pHead->FileSizeGB=-1;
   /*      struct NODE *pTail = pHead;
         pTail->pNext = NULL;
 */
@@ -315,6 +316,57 @@ void Bublle_sort_list(struct NODE *pHead )
 
 }
 
+struct NODE * CopyListNodes (  struct  NODE * qSource, struct  NODE * pCopy )
+{
+        //把qSource复制一份到pCopy中
+        pCopy = (struct NODE *)malloc(sizeof(struct NODE));
+
+         printf("copy 链表  \n");
+
+        if ( pCopy == NULL)
+        {
+                printf("创建链表失败，终止 \n");
+                exit(-1);
+        }
+
+        *pCopy = *qSource;
+        struct NODE   *pTail = pCopy;
+
+        qSource = qSource->pNext;
+        while (qSource != NULL)
+        {
+
+                struct  NODE *pNew = (struct  NODE *)malloc(sizeof(struct  NODE)) ;
+                if ( pNew  == NULL)
+                {
+                        printf("创建链表失败，终止 \n");
+                        exit(-1);
+                }
+
+                *pNew = *qSource;
+                //printf("qSource  %d  \n",qSource->num);
+                //  printf(" pTail  %d  data  %d  \n", pTail->num, pTail->data);
+                //   printf(" pNew %d  data  %d  \n", pNew->num, pNew->data);
+
+                pNew->pNext = NULL;
+
+                pTail->pNext = pNew;
+                pTail = pNew;
+
+                qSource = qSource->pNext;
+
+
+        }
+
+        pTail->pNext = NULL;
+
+
+     printf("copy 链表 完成  \n");
+
+        return pCopy;
+
+}
+
 int CopyListNode ( struct  NODE * Copy_pHead, struct  NODE * qHead )
 {
         //by black
@@ -359,6 +411,8 @@ void ListDestroy(struct NODE*head)
         p = head;
         if (  NULL == head->pNext)
         {
+        	 free(head);
+        head = NULL;
                 printf("  链表 NULL \n" );
                 return  ;
         }
@@ -434,5 +488,22 @@ struct NODE *quickSortList( struct NODE *head)
         return tmpHead.pNext;
 }
 
+
+struct NODE * SortList (   struct NODE *pHead )
+{
+	printf ( "SortList 链表  \n" );
+	//排序遍历链表
+	struct NODE *pList = NULL;
+	//pList = CopyListNodes ( pHead, pList );
+
+
+	pList =  quickSortList ( pHead->pNext );
+
+
+	printf ( "SortList 链表 完成 \n" );
+	return  pList ;
+
+
+}
 
 

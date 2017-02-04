@@ -21,6 +21,16 @@ double AllFileSizes = 0;
 // 新bug  单个文件超过2GB  文件大小出错
 //25.3 GB   显示 1.398491 GB
 
+
+void FilePathFindExten ( TCHAR cFileName[ MAX_PATH ], TCHAR Exten[MAX_PATH / 10 ] );
+void find ( char * lpPath, struct NODE *pHead ) ;
+int calculateFilePiontMD5 (  struct NODE *p );
+int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NODE *pHead );
+int  file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHead  ) ;
+
+int menu (  char filepath[MAX_PATH], struct NODE *pHead );
+
+
 void FilePathFindExten ( TCHAR cFileName[ MAX_PATH ], TCHAR Exten[MAX_PATH / 10 ] )
 {
 	//获得文件后缀名
@@ -113,32 +123,23 @@ void find ( char * lpPath, struct NODE *pHead )
 				strcpy ( szFile, lpPath );
 
 				strcat ( szFile, "\\" );
-
 				strcat ( szFile, FindFileData.cFileName );
-
-
 
 				if (  strcmp ( FindFileData.cFileName, "$RECYCLE.BIN" ) == 0 ) // $RECYCLE.BIN
 				{
 					//跳过回收站
 					printf ( "回收站\n" );
-
 				}
 				else
 				{
 					//递归遍历该目录
 					find ( szFile, pHead );
 
-
 				}
-
-
 			}
 
 		}
-
 		else
-
 		{
 
 			char Extension[MAX_PATH / 10] = {0};
@@ -190,13 +191,7 @@ void find ( char * lpPath, struct NODE *pHead )
 			pNew->FileSizeLow =  FileSizeLong % ( INT_Max ) ;
 
 			strcpy (  pNew->FileMD5, ""  ); //  pNew->FileMD5 = 0;
-
-
-
-
 			add_list ( pHead, pNew );
-
-
 
 		}
 
@@ -294,10 +289,6 @@ int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NO
 
 
 
-	//   sprintf(  fileName ,"\\list%d.txt",i );
-
-
-
 	if ( ( fp = fopen ( fileName, "w" ) ) == NULL )
 	{
 		printf ( "写入到  %s \n  ", fileName );
@@ -308,7 +299,7 @@ int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NO
 
 	char FilePositTemp[MAX_PATH] = {0};
 	unsigned char digest[16] = {0};
-	struct NODE *p = pHead->pNext;
+	struct NODE *p = pHead;//->pNext;
 
 	int i = 0;
 	while ( NULL != p )
@@ -345,13 +336,11 @@ int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NO
 
 				double temp = 0;
 				temp =  p-> FileSizeHigh ;
-				temp=temp* INT_Max + p->FileSizeLow ;
+				temp = temp * INT_Max + p->FileSizeLow ;
 				fprintf ( fp, "debug   %lf 字节  ", temp );
 				temp = temp / 1073741824 ;
 
 				fprintf ( fp, "   %lf GB  ", temp );
-
-
 			}
 
 		}
@@ -372,12 +361,7 @@ int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NO
 			fprintf ( fp, "\n" );
 		}
 
-
-
-
 		p = p->pNext;
-
-
 		fprintf ( fp, "\n" );
 	}
 
@@ -401,16 +385,20 @@ int  FileListWrite (  char filepath[MAX_PATH], char TxtName[MAX_PATH], struct NO
 }
 
 
-int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHead  )
+int  file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHead  )
 {
 	//排序遍历链表查找重复文件
 
+	printf ( "  排序遍历链表查找重复文件   \n" );
+	//traverse_list ( pHead );
 
-	struct NODE *pList = (  struct NODE * ) malloc ( sizeof (  struct NODE ) ); // NULL  ;
+	//struct NODE *pList = (  struct NODE * ) malloc ( sizeof (  struct NODE ) ); // NULL  ;
 
 
-	pList  =  quickSortList ( pHead->pNext );
-	struct NODE *p =  pList ;
+
+	struct NODE *p =  pHead;
+
+	//traverse_list ( p );
 
 
 	struct NODE *pFile = NULL;
@@ -428,8 +416,10 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 	{
 		if ( FileSizeCache == p->FileSizeB )
 		{
-
-
+			/*
+			showPiont(p);
+			printf ( "  p->FileSizeB= %lld \n", p->FileSizeB );
+			showPiont( qTemp);*/
 			calculateFilePiontMD5 ( qTemp );
 			calculateFilePiontMD5 ( p );
 			if ( ( strcmp ( p->FileMD5, qTemp->FileMD5 ) == 0 ) && ( strcmp ( p->FileMD5, "" ) != 0 ) )
@@ -457,16 +447,11 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 				counts++;
 				allSize = p->FileSizeB + allSize;
 			}
-
-
-
 		}
 		else
 		{
 			FileSizeCache = p->FileSizeB ;
 		}
-
-
 
 		qTemp = p;
 		p = p->pNext;
@@ -474,14 +459,14 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 	}
 
 
-	FileListWrite ( filepath, "repeatList", pFile );
+	FileListWrite ( filepath, "repeatList", pFile->pNext );
 
 	printf ( "    \n" );
 	printf ( " %ld 个重复文件  \n",    counts );
 	printf ( "共  %lld  MB  \n",    allSize / 1048576 );
 
 
-	ListDestroy ( pList );
+	//ListDestroy ( pList );
 
 	ListDestroy ( pFile );
 
@@ -491,9 +476,8 @@ int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHea
 struct NODE * SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
 {
 	//排序遍历链表  写入文件
-
-
-	struct NODE *pList = (  struct NODE * ) malloc ( sizeof (  struct NODE ) ); // NULL  ;
+	struct NODE *pList;
+	pList = CopyListNodes ( pHead, pList );
 
 
 	pList  =  quickSortList ( pHead->pNext );
@@ -502,6 +486,16 @@ struct NODE * SortListWriteFile (  char filepath[MAX_PATH], struct NODE *pHead )
 
 	return  pList ;
 
+	/*
+	        struct NODE *pList = (  struct NODE * ) malloc ( sizeof (  struct NODE ) ); // NULL  ;
+
+
+	        pList  =  quickSortList ( pHead->pNext );
+
+	        FileListWrite (   filepath, "SortList", pList );
+
+	        return  pList ;
+	*/
 }
 
 int menu (  char filepath[MAX_PATH], struct NODE *pHead )
@@ -510,18 +504,14 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
 
 
 
+	//      traverse_list ( pHead->pNext );
 
-
-	struct NODE * q = pHead;
-
-
-	do
+	//do
 	{
 		printf ( "1. 遍历文件夹并把内容输入到txt中  \n" );
-
 		printf ( "2. 遍历文件夹 按大小排序输入到txt中  \n" );
-
 		printf ( "3. 检查重复文件并把结果输入到txt文件中 \n" );
+		printf ( "4. 排序并把重复文件输入到txt中 \n" );
 
 		printf ( "0. 退出   \n" );
 		scanf ( "%d", &select );
@@ -536,27 +526,36 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
 			break  ;
 		case 2 :
 			// 遍历文件夹 按大小排序输入到txt中
-			q = SortListWriteFile ( filepath, pHead );
 
+			pHead = SortList (   pHead );
+			FileListWrite (   filepath, "SortList", pHead );
 			break  ;
 
 		case 3 :
 			//检查重复文件并把结果输入到txt文件中
-			traverse_file_list_check_repeat ( filepath, pHead ) ;
+			//traverse_file_list_check_repeat ( filepath, pHead ) ;
+			pHead = SortList (   pHead );
+			file_list_check_repeat (   filepath,   pHead  );
 			break ;
+		case 4 :
+			//排序并把重复文件输入到txt文件中
 
+			pHead = SortList (   pHead );
+			FileListWrite (   filepath, "SortList", pHead );
+			file_list_check_repeat (   filepath,   pHead  );
+			break ;
 		default :
 			break ;
 		}
 	}
-	while ( select != 0 );
+	//while ( select != 0 );
 
 
 
-	if ( q )
+	if ( pHead )
 	{
-		ListDestroy ( q );
-		q = NULL;
+		ListDestroy ( pHead );
+
 		// ListDestroy(pHead);
 		pHead = NULL;
 		printf ( " ListDestroy  traver  (pHead)   \n" );
@@ -573,7 +572,7 @@ int menu (  char filepath[MAX_PATH], struct NODE *pHead )
 }
 
 
-void fun ( )
+int fun ( )
 {
 
 	struct NODE *pHead = NULL;
@@ -589,7 +588,7 @@ void fun ( )
 	}
 
 
-	char filepath[MAX_PATH] = "F:" ;
+	char filepath[MAX_PATH] = "F:\\JAVA\\mod  make" ; //\\xdmod
 
 	printf ( "输入目标地址 （例如 F:\\\\qq  ）\n" );
 	// scanf("%s",filepath);
@@ -609,6 +608,7 @@ void fun ( )
 	{
 		//   printf("  链表不空 \n");
 	}
+
 
 
 
@@ -638,44 +638,6 @@ void fun ( )
 
 }
 
-int  fun3 (  char filepath[MAX_PATH]  )
-{
-
-	FILE *fp;
-	char fileName[MAX_PATH] = {0};
-
-	long int counts = 0;
-	long  long int allSize = 0;
-
-
-
-	strcpy ( fileName, filepath );
-	strcat ( fileName, "\\list2.txt" );
-
-
-
-	if ( ( fp = fopen ( fileName, "w" ) ) == NULL )
-	{
-		printf ( "%s  open error !\n", fileName );
-		Sleep ( 5000 );
-		return -2;
-	}
-	printf ( "输入txt地址为 %s \n", fileName );
-
-
-}
-
-void fun2( )
-{
-
-	char filepath[MAX_PATH] = "F:" ;
-
-
-	printf ( "输入目标地址 %s \n", filepath );
-	fun3 ( filepath );
-
-}
-
 int main ( void )
 {
 	/*
@@ -700,3 +662,141 @@ int main ( void )
 	system ( "pause" );
 	return  0;
 }
+/*
+
+int traverse_file_list_check_repeat ( char filepath[MAX_PATH], struct NODE *pHead  )
+{
+        //排序遍历链表查找重复文件
+
+
+        struct NODE *pList = (  struct NODE * ) malloc ( sizeof (  struct NODE ) ); // NULL  ;
+
+
+        pList  =  quickSortList ( pHead->pNext );
+        struct NODE *p =  pList ;
+
+
+        struct NODE *pFile = NULL;
+        pFile = Create_plist();
+
+
+        long  long int FileSizeCache = 0 ;
+
+        struct NODE *qTemp = NULL  ;
+        long int counts = 0;
+        long  long int allSize = 0;
+
+        qTemp = p;
+        while ( NULL != p )
+        {
+                if ( FileSizeCache == p->FileSizeB )
+                {
+
+
+                        calculateFilePiontMD5 ( qTemp );
+                        calculateFilePiontMD5 ( p );
+                        if ( ( strcmp ( p->FileMD5, qTemp->FileMD5 ) == 0 ) && ( strcmp ( p->FileMD5, "" ) != 0 ) )
+                        {
+
+                                struct NODE  *pNew1 = ( struct NODE * ) malloc ( sizeof ( struct NODE ) );
+                                if ( NULL == pNew1 )
+                                {
+                                        printf ( "创建链表节点失败，终止 \n" );
+                                        return -2;
+
+                                }
+                                *pNew1 = *qTemp;
+                                add_list ( pFile, pNew1 );
+
+                                struct NODE  *pNew2 = ( struct NODE * ) malloc ( sizeof ( struct NODE ) );
+                                if ( NULL == pNew2 )
+                                {
+                                        printf ( "创建链表节点失败，终止 \n" );
+                                        return -2;
+
+                                }
+                                *pNew2 = *p;
+                                add_list ( pFile, pNew2 );
+                                counts++;
+                                allSize = p->FileSizeB + allSize;
+                        }
+
+
+
+                }
+                else
+                {
+                        FileSizeCache = p->FileSizeB ;
+                }
+
+
+
+                qTemp = p;
+                p = p->pNext;
+
+        }
+
+
+        FileListWrite ( filepath, "repeatList", pFile );
+
+        printf ( "    \n" );
+        printf ( " %ld 个重复文件  \n",    counts );
+        printf ( "共  %lld  MB  \n",    allSize / 1048576 );
+
+
+        ListDestroy ( pList );
+
+        ListDestroy ( pFile );
+
+        return 0;
+}
+
+*/
+
+
+/*
+
+int  fun3 (  char filepath[MAX_PATH]  )
+{
+
+        FILE *fp;
+        char fileName[MAX_PATH] = {0};
+
+        long int counts = 0;
+        long  long int allSize = 0;
+
+
+
+        strcpy ( fileName, filepath );
+        strcat ( fileName, "\\list2.txt" );
+
+
+
+        if ( ( fp = fopen ( fileName, "w" ) ) == NULL )
+        {
+                printf ( "%s  open error !\n", fileName );
+                Sleep ( 5000 );
+                return -2;
+        }
+        printf ( "输入txt地址为 %s \n", fileName );
+
+
+}
+
+void fun2( )
+{
+
+        char filepath[MAX_PATH] = "F:" ;
+
+
+        printf ( "输入目标地址 %s \n", filepath );
+        fun3 ( filepath );
+
+}
+
+*/
+
+
+
+
+
